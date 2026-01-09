@@ -1,7 +1,8 @@
 package com.example.crud.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,6 @@ import com.example.crud.infrastructure.entity.Usuario;
 
 import lombok.RequiredArgsConstructor;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/usuario")
 @RequiredArgsConstructor
@@ -25,14 +25,9 @@ public class UsuarioController {
 
 	private final UsuarioService service;
 	
-	@PostMapping
-	public ResponseEntity<UsuarioDTO> adicionarUsuario(@RequestBody Usuario usuario){
-		return ResponseEntity.ok(service.adicionarUsuario(usuario));
-	}
-	
 	@GetMapping
-	public ResponseEntity<UsuarioDTO> buscarUsuario(@RequestParam Long id){
-		return ResponseEntity.ok(service.buscarUsuario(id));
+	public List<UsuarioDTO> listar(){
+		return service.listarUsuarios();
 	}
 	
 	@PutMapping
@@ -41,8 +36,13 @@ public class UsuarioController {
 	}
 	
 	@DeleteMapping
-	public ResponseEntity<Void> deletarUsuario(@RequestParam Long id ){
+	public ResponseEntity<UsuarioDTO> deletarUsuario(@RequestParam Long id){
 		service.deletarUsuario(id);
 		return ResponseEntity.ok().build();
+	}
+	
+	@PostMapping
+	public ResponseEntity<UsuarioDTO> adicionarUsuario(@RequestBody Usuario usuario){
+		return ResponseEntity.ok(service.adicionarUsuario(usuario));
 	}
 }
