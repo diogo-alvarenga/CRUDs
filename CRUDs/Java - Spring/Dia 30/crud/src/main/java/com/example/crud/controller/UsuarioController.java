@@ -11,15 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.crud.DTO.EntradaComIdDTO;
 import com.example.crud.DTO.EntradaDTO;
+import com.example.crud.DTO.EntradaIdDTO;
 import com.example.crud.DTO.LoginDTO;
-import com.example.crud.DTO.RetornoDTO;
+import com.example.crud.DTO.SaidaDTO;
 import com.example.crud.business.UsuarioService;
-import com.example.crud.controller.assembler.Assembler;
+import com.example.crud.controller.assembler.UsuarioAssembler;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,35 +30,22 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/usuario")
-@Tag(name = "Api CRUD")
+@Tag(name = "API CRUD")
 public class UsuarioController {
 
 	private final UsuarioService service;
-	private final Assembler assembler;
-
+	private final UsuarioAssembler assembler;
+	
+	
 	@Operation(summary = "Adicionar usuario", method = "POST")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "201", description = "Usuario adicionado com sucesso."),
+			@ApiResponse(responseCode = "201", description = "Usuario adicionado com sucesso"),
 			@ApiResponse(responseCode = "500", description = "Erro ao adicionar usuario")
 	})
 	@PostMapping
-	public ResponseEntity<RetornoDTO> adicioanarUsuario(@Valid @RequestBody EntradaDTO entrada){
-		RetornoDTO dto = service.adicionarUsuario(entrada);
-		
+	public ResponseEntity<SaidaDTO> adicionarUsuario(@Valid @RequestBody EntradaDTO entrada){
+		SaidaDTO dto = service.adicionarUsuario(entrada);
 		return ResponseEntity.status(HttpStatus.CREATED).body(assembler.adicionarHateoas(dto));
-		
-	}
-	
-	@Operation(summary = "Buscar usuario", method = "GET")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "Usuario encontrado"),
-			@ApiResponse(responseCode = "500", description = "Erro ao buscar usuario")
-	})
-	@GetMapping(value = "{id}")
-	public ResponseEntity<RetornoDTO> buscarUsuario(@PathVariable Long id){
-		RetornoDTO dto = service.buscarUsuario(id);
-		
-		return ResponseEntity.ok(assembler.adicionarHateoas(dto));
 	}
 	
 	@Operation(summary = "Atualizar usuario", method = "PUT")
@@ -68,8 +54,8 @@ public class UsuarioController {
 			@ApiResponse(responseCode = "500", description = "Erro ao atualizar usuario")
 	})
 	@PutMapping
-	public ResponseEntity<RetornoDTO> atualizarUsuario(@Valid @RequestBody EntradaComIdDTO entrada ){
-		RetornoDTO dto = service.atualizarUsuario(entrada);
+	public ResponseEntity<SaidaDTO> atualizarUsuario(@Valid @RequestBody EntradaIdDTO entrada){
+		SaidaDTO dto = service.atualizarUsuario(entrada);
 		
 		return ResponseEntity.ok(assembler.adicionarHateoas(dto));
 	}
@@ -79,32 +65,43 @@ public class UsuarioController {
 			@ApiResponse(responseCode = "204", description = "Usuario deletado com sucesso"),
 			@ApiResponse(responseCode = "500", description = "Erro ao deletar usuario")
 	})
-	@DeleteMapping
-	public ResponseEntity<Void> deletarUsuario(@RequestParam Long id){
+	@DeleteMapping(value = "/{id}")
+	public ResponseEntity<Void> deletarUsuario(@PathVariable Long id){
 		service.deletarUsuario(id);
-		
 		return ResponseEntity.noContent().build();
 	}
 	
-	@Operation(summary = "Fazer teste de login", method = "POST")
+	@Operation(summary = "Buscar usuario por id",method = "GET")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "201", description = "Teste de login efetuado com sucesso"),
-			@ApiResponse(responseCode = "500", description = "Erro ao tentar fazer teste de login")
+			@ApiResponse(responseCode = "200", description = "Usuario encontrado com sucesso"),
+			@ApiResponse(responseCode = "500", description = "Erro ao buscar usuario")
 	})
-	@PostMapping(value = "/login")
-	public ResponseEntity<RetornoDTO> login(@Valid @RequestBody LoginDTO entrada){
-		RetornoDTO dto = service.login(entrada);
+	@GetMapping(value = "/{id}")
+	public ResponseEntity<SaidaDTO> buscarUsuario(@PathVariable Long id){
+		SaidaDTO dto = service.buscarUsuario(id);
 		
 		return ResponseEntity.ok(assembler.adicionarHateoas(dto));
 	}
 	
-	@Operation(summary = "Listar todos", method = "GET")
-	@ApiResponses(value= {
-			@ApiResponse(responseCode = "200", description= "Usuarios listados com sucesso"),
+	@Operation(summary = "Listar todos os usuarios", method = "GET")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "Listar usuarios"),
 			@ApiResponse(responseCode = "500", description = "Erro ao listar usuarios")
 	})
 	@GetMapping
-	public List<RetornoDTO> listarTodos(){
-		return service.listarTodos();
+	public List<SaidaDTO> listarTodos(){
+		return service.listar();
+	}
+	
+	@Operation(summary = "Fazer teste de login", method = "POST")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "201", description = "Teste de login feito com sucesso"),
+			@ApiResponse(responseCode = "500", description = "Erro no teste de login")
+	})
+	@PostMapping(value = "/login")
+	public ResponseEntity<SaidaDTO> login(@Valid @RequestBody LoginDTO entrada){
+		SaidaDTO dto = service.login(entrada);
+		
+		return ResponseEntity.ok(dto);
 	}
 }

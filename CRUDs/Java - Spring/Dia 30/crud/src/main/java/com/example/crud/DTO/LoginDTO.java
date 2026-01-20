@@ -1,7 +1,7 @@
 package com.example.crud.DTO;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,20 +10,15 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class EntradaComIdDTO {
+public class LoginDTO {
 
-	@NotNull
-	private Long id;
-	
-	@NotBlank
-	private String nome;
-	
-	@NotBlank
-	private String email;
-	
 	@NotBlank
 	private String senha;
+	
+	@Email
+	@NotBlank
+	private String email;
 }

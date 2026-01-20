@@ -1,7 +1,7 @@
 package com.example.crud.DTO;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import org.springframework.hateoas.RepresentationModel;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,20 +10,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class EntradaComIdDTO {
+public class SaidaDTO extends RepresentationModel<SaidaDTO>{
 
-	@NotNull
 	private Long id;
-	
-	@NotBlank
-	private String nome;
-	
-	@NotBlank
 	private String email;
-	
-	@NotBlank
-	private String senha;
+	private String nome;
 }

@@ -1,5 +1,7 @@
 package com.example.crud.DTO;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +15,11 @@ import lombok.Setter;
 @NoArgsConstructor
 public class EntradaDTO {
 	
+	@NotBlank
 	private String nome;
+	@Email
+	@NotBlank
 	private String email;
+	@NotBlank
 	private String senha;
 }
