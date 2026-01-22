@@ -76,7 +76,7 @@ public class UsuarioController {
 			@ApiResponse(responseCode = "500", description = "Erro ao atualizar usuario")
 	})
 	@PutMapping
-	public ResponseEntity<SaidaDTO> atualizarUsuario(@RequestBody EntradaIDDTO entrada){
+	public ResponseEntity<SaidaDTO> atualizarUsuario(@Valid @RequestBody EntradaIDDTO entrada){
 		SaidaDTO saida = service.atualizarUsuario(entrada);
 		
 		return ResponseEntity.ok(assembler.adicionarHateoas(saida));
@@ -88,7 +88,7 @@ public class UsuarioController {
 			@ApiResponse(responseCode = "500", description = "Erro ao realizar teste de login")
 	})
 	@PostMapping(value = "/login")
-	public ResponseEntity<SaidaDTO> login(@RequestBody LoginDTO login){
+	public ResponseEntity<SaidaDTO> login(@Valid @RequestBody LoginDTO login){
 		SaidaDTO saida = service.login(login);
 		
 		return ResponseEntity.ok(assembler.adicionarHateoas(saida));
