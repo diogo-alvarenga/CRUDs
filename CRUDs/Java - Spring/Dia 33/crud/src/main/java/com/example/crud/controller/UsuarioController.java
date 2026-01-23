@@ -24,6 +24,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -41,7 +42,7 @@ public class UsuarioController {
 			@ApiResponse(responseCode = "500", description = "Erro ao adicionar usuario")
 	})
 	@PostMapping
-	public ResponseEntity<SaidaDTO> adicionarUsuario(@RequestBody EntradaDTO entrada){
+	public ResponseEntity<SaidaDTO> adicionarUsuario(@Valid @RequestBody EntradaDTO entrada){
 		SaidaDTO saida = service.adicionarUsuario(entrada);
 		assembler.adicionarHateoas(saida);
 		return ResponseEntity.status(HttpStatus.CREATED).body(saida);
@@ -53,7 +54,7 @@ public class UsuarioController {
 			@ApiResponse(responseCode = "500", description = "Erro ao adicionar usuario")
 	})
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<SaidaDTO> atualizarUsuario(@RequestBody AtualizacaoDTO entrada, @PathVariable Long id){
+	public ResponseEntity<SaidaDTO> atualizarUsuario(@Valid @RequestBody AtualizacaoDTO entrada, @PathVariable Long id){
 		SaidaDTO saida = service.atualizarUsuario(entrada, id);
 		assembler.adicionarHateoas(saida);
 		return ResponseEntity.ok(saida);
@@ -88,7 +89,7 @@ public class UsuarioController {
 			@ApiResponse(responseCode = "500", description = "Erro ao fazer teste de login")
 	})
 	@PostMapping(value = "/login")
-	public ResponseEntity<SaidaDTO> testeLogin(@RequestBody LoginDTO login){
+	public ResponseEntity<SaidaDTO> testeLogin(@Valid @RequestBody LoginDTO login){
 		SaidaDTO saida = service.login(login);
 		return ResponseEntity.ok(saida);
 	}
