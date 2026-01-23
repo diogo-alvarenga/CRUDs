@@ -16,7 +16,7 @@ public class Assembler {
 		
 		dto.add(linkTo(methodOn(UsuarioController.class).buscarUsuario(dto.getId())).withSelfRel());
 		dto.add(linkTo(methodOn(UsuarioController.class).adicionarUsuario(null)).withRel("adicionar"));
-		dto.add(linkTo(methodOn(UsuarioController.class).deletarUsuario(dto.getId())).withRel("deletar"));
+		dto.add(linkTo(UsuarioController.class).slash("/" + dto.getId()).withRel("delete"));		
 		dto.add(linkTo(methodOn(UsuarioController.class).atualizarUsuario(null)).withRel("atualizar"));
 		dto.add(linkTo(methodOn(UsuarioController.class).listarUsuarios()).withRel("listar"));
 		

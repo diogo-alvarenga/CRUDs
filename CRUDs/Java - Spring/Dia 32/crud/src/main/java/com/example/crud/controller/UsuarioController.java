@@ -66,8 +66,9 @@ public class UsuarioController {
 			@ApiResponse(responseCode = "500", description = "Erro ao adicionar usuario")
 	})
 	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<String> deletarUsuario(@PathVariable Long id){
-		return ResponseEntity.ok().body(service.deletarUsuario(id));
+	public ResponseEntity<Void> deletarUsuario(@PathVariable Long id){
+		service.deletarUsuario(id);
+		return ResponseEntity.noContent().build();
 	}
 	
 	@Operation(summary = "Atualizar usuario", method = "PUT")

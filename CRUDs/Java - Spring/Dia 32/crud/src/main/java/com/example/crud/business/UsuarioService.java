@@ -25,18 +25,10 @@ public class UsuarioService {
 	private final PasswordEncoder encoder;
 	
 	public SaidaDTO adicionarUsuario(EntradaDTO entrada) {
-		Usuario usuario = Usuario.builder()
-				.nome(entrada.getNome())
-				.email(entrada.getEmail())
-				.senha(encoder.encode(entrada.getSenha()))
-				.build();
+		Usuario usuario = toEntity(entrada);
 		repository.saveAndFlush(usuario);
 		
-		return SaidaDTO.builder()
-				.nome(usuario.getNome())
-				.email(usuario.getEmail())
-				.id(usuario.getId())
-				.build();
+		return toSaidaDTO(usuario);
 	}
 	
 	public SaidaDTO atualizarUsuario(EntradaIDDTO entrada) {
@@ -51,30 +43,20 @@ public class UsuarioService {
 		
 		repository.saveAndFlush(usuarioAtualizado);
 		
-		return SaidaDTO.builder()
-				.nome(usuarioAtualizado.getNome())
-				.email(usuarioAtualizado.getEmail())
-				.id(usuarioAtualizado.getId())
-				.build();
+		return toSaidaDTO(usuarioAtualizado);
 	}
 	
 	public SaidaDTO buscarUsuario(Long id) {
 		Usuario usuario = repository.findById(id).orElseThrow(
 				()-> new EntityNotFoundException());
-		return SaidaDTO.builder()
-				.nome(usuario.getNome())
-				.email(usuario.getEmail())
-				.id(usuario.getId())
-				.build();
+		return toSaidaDTO(usuario);
 	}
 	
-	public String deletarUsuario(Long id) {
-		Usuario usuario = repository.findById(id).orElseThrow(
-				()-> new EntityNotFoundException());
-		
+	public void deletarUsuario(Long id) {
+		if(!repository.existsById(id)) {
+			throw new EntityNotFoundException();
+		}
 		repository.deleteById(id);
-		
-		return "Usuario com email " + usuario.getEmail() + " deletado com sucesso!";
 	}
 	
 	public SaidaDTO login(LoginDTO login) {
@@ -85,11 +67,7 @@ public class UsuarioService {
 			throw new SenhaIncorretaException();
 		}
 		
-		return SaidaDTO.builder()
-				.nome(usuario.getNome())
-				.email(usuario.getEmail())
-				.id(usuario.getId())
-				.build();
+		return toSaidaDTO(usuario);
 	}
 	
 	public List<SaidaDTO> listarTodos(){
@@ -101,5 +79,21 @@ public class UsuarioService {
 						.id(usuario.getId())
 						.build())
 				.collect(Collectors.toList());
+	}
+	
+	private Usuario toEntity(EntradaDTO entrada) {
+		return Usuario.builder()
+				.nome(entrada.getNome())
+				.email(entrada.getEmail())
+				.senha(encoder.encode(entrada.getSenha()))
+				.build();
+	}
+	
+	private SaidaDTO toSaidaDTO(Usuario usuario) {
+		return SaidaDTO.builder()
+				.nome(usuario.getNome())
+				.email(usuario.getEmail())
+				.id(usuario.getId())
+				.build();
 	}
 }
