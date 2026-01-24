@@ -1,11 +1,12 @@
 package com.example.crud.mapper;
 
-import java.util.List;
+import org.springframework.stereotype.Component;
 
 import com.example.crud.DTO.EntradaDTO;
 import com.example.crud.DTO.SaidaDTO;
 import com.example.crud.infrastructure.entity.Usuario;
 
+@Component
 public class Mapper {
 
 	public SaidaDTO entidadeParaDTO(Usuario usuario) {
