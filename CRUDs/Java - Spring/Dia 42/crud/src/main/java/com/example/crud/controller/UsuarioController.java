@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.crud.assembler.Assembler;
 import com.example.crud.business.UsuarioService;
 import com.example.crud.dto.AtualizacaoDTO;
 import com.example.crud.dto.EntradaDTO;
 import com.example.crud.dto.LoginDTO;
 import com.example.crud.dto.SaidaDTO;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class UsuarioController {
 
 	private final UsuarioService service;
+	private final Assembler assembler;
 	
 	@Operation(summary = "201", method = "POST")
 	@ApiResponses(value = {
@@ -41,7 +42,7 @@ public class UsuarioController {
 	public ResponseEntity<SaidaDTO> adicionarUsuario(@Valid @RequestBody EntradaDTO entrada){
 		SaidaDTO saida = service.adicionarUsuario(entrada);
 		
-		return ResponseEntity.status(HttpStatus.CREATED).body(saida);
+		return ResponseEntity.status(HttpStatus.CREATED).body(assembler.addHateoas(saida));
 	}
 	
 	@Operation(summary = "Buscar usuario", method = "GET")
@@ -53,7 +54,7 @@ public class UsuarioController {
 	public ResponseEntity<SaidaDTO> buscarUsuario(@PathVariable Long id){
 		SaidaDTO saida = service.buscarUsuario(id);
 		
-		return ResponseEntity.ok(saida);
+		return ResponseEntity.ok(assembler.addHateoas(saida));
 	}
 	
 	@Operation(summary = "Atualizar usuario", method = "PUT")
@@ -65,7 +66,7 @@ public class UsuarioController {
 	public ResponseEntity<SaidaDTO> atualizarUsuario(@PathVariable Long id, @RequestBody AtualizacaoDTO atl){
 		SaidaDTO saida = service.atualizarUsuario(id, atl);
 		
-		return ResponseEntity.ok(saida);
+		return ResponseEntity.ok(assembler.addHateoas(saida));
 	}
 	
 	@Operation(summary = "Deletar usuario", method = "DELETE")
@@ -89,7 +90,7 @@ public class UsuarioController {
 	public ResponseEntity<SaidaDTO> login(@Valid @RequestBody LoginDTO login ){
 		SaidaDTO saida = service.login(login);
 		
-		return ResponseEntity.ok(saida);
+		return ResponseEntity.ok(assembler.addHateoas(saida));
 	}
 	
 	@Operation(summary = "Listar usuarios", method = "GET")
