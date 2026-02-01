@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.example.crud.dto.AtualizacaoDTO;
 import com.example.crud.dto.EntradaDTO;
 import com.example.crud.dto.LoginDTO;
-import com.example.crud.dto.LoginResponseDTO;
 import com.example.crud.dto.SaidaDTO;
 import com.example.crud.exception.EmailExistenteException;
 import com.example.crud.exception.SenhaIncorretaException;
@@ -16,7 +15,6 @@ import com.example.crud.exception.UsuarioNaoEncontradoException;
 import com.example.crud.infrastructure.entity.Usuario;
 import com.example.crud.infrastructure.repository.UsuarioRepository;
 import com.example.crud.mapper.Mapper;
-import com.example.crud.security.JwtService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,24 +23,32 @@ import lombok.RequiredArgsConstructor;
 public class UsuarioService {
 
 	private final UsuarioRepository repository;
-	private final PasswordEncoder encoder;
 	private final Mapper mapper;
-	private final JwtService jwtService;
-
+	private final PasswordEncoder encoder;
+	
 	public SaidaDTO adicionarUsuario(EntradaDTO entrada) {
-		if(repository.findByEmail(entrada.getEmail()).isPresent()) {
+		if(repository.findByEmail(entrada.email()).isPresent()) {
 			throw new EmailExistenteException();
 		}
-		Usuario usuario = mapper.dtoParaEntidade(entrada);
-		usuario.setSenha(encoder.encode(entrada.getSenha()));
+		Usuario usuario = mapper.dtoEmEntidade(entrada);
+		usuario.setSenha(encoder.encode(entrada.senha()));
 		repository.saveAndFlush(usuario);
 		
-		return mapper.entidadeParaDto(usuario);
+		return mapper.entidadeParaDTO(usuario);
 	}
 	
 	public SaidaDTO buscarUsuario(Long id) {
-		Usuario usuario = buscarUsuarioPorId(id);
-		return mapper.entidadeParaDto(usuario);
+		Usuario usuario = buscarPorId(id);
+		return mapper.entidadeParaDTO(usuario);
+	}
+	
+	public SaidaDTO atualizarUsuario(Long id, AtualizacaoDTO atl) {
+		Usuario usuarioEntity = buscarPorId(id);
+		Usuario usuarioAtl = mapper.atualizar(atl,usuarioEntity);
+		usuarioAtl.setSenha(atl.senha()!=null?encoder.encode(atl.senha()):usuarioEntity.getSenha());
+		repository.saveAndFlush(usuarioAtl);
+		
+		return mapper.entidadeParaDTO(usuarioAtl);
 	}
 	
 	public void deletarUsuario(Long id) {
@@ -52,34 +58,24 @@ public class UsuarioService {
 		repository.deleteById(id);
 	}
 	
-	public SaidaDTO atualizarUsuario(Long id, AtualizacaoDTO atl) {
-		Usuario usuarioEntity = buscarUsuarioPorId(id);
-		Usuario usuarioAtualizado = mapper.atualizar(atl, usuarioEntity);
-		usuarioAtualizado.setSenha(atl.getSenha()!=null?encoder.encode(atl.getSenha()):usuarioEntity.getSenha());
-		repository.saveAndFlush(usuarioAtualizado);
+	public SaidaDTO login(LoginDTO login) {
+		Usuario usuario = repository.findByEmail(login.email()).orElseThrow(
+				()-> new UsuarioNaoEncontradoException());
+		if(!encoder.matches(login.senha(), usuario.getSenha())) {
+			throw new SenhaIncorretaException();
+		}
 		
-		return mapper.entidadeParaDto(usuarioAtualizado);
+		return mapper.entidadeParaDTO(usuario);
 	}
 	
-	public List<SaidaDTO> listarUsuarios(){
+	public List<SaidaDTO> listarTodos(){
 		return repository.findAll()
 				.stream()
-				.map(mapper::entidadeParaDto)
+				.map(mapper::entidadeParaDTO)
 				.toList();
 	}
 	
-	public LoginResponseDTO login(LoginDTO login) {
-		Usuario usuario = repository.findByEmail(login.getEmail()).orElseThrow(
-				() -> new UsuarioNaoEncontradoException());
-		if(!encoder.matches(login.getSenha(), usuario.getSenha())) {
-			throw new SenhaIncorretaException();
-		}
-		String token = jwtService.gerarToken(usuario.getId(), usuario.getEmail());
-
-	    return new LoginResponseDTO(token);
-	}
-	
-	private Usuario buscarUsuarioPorId(Long id) {
+	private Usuario buscarPorId(Long id) {
 		return repository.findById(id).orElseThrow(
 				() -> new UsuarioNaoEncontradoException());
 	}

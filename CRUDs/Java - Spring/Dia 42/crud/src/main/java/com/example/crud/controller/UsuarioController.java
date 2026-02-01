@@ -17,14 +17,11 @@ import com.example.crud.business.UsuarioService;
 import com.example.crud.dto.AtualizacaoDTO;
 import com.example.crud.dto.EntradaDTO;
 import com.example.crud.dto.LoginDTO;
-import com.example.crud.dto.LoginResponseDTO;
 import com.example.crud.dto.SaidaDTO;
-import com.example.crud.security.JwtService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -34,7 +31,6 @@ import lombok.RequiredArgsConstructor;
 public class UsuarioController {
 
 	private final UsuarioService service;
-	private final JwtService jwtService;
 	
 	@Operation(summary = "201", method = "POST")
 	@ApiResponses(value = {
@@ -60,17 +56,6 @@ public class UsuarioController {
 		return ResponseEntity.ok(saida);
 	}
 	
-	@Operation(summary = "Deletar usuario", method = "DELETE")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "204", description="Usuario deletado"),
-			@ApiResponse(responseCode = "500", description="Erro ao deletar usuario")
-	})
-	@DeleteMapping("/{id}")
-	public ResponseEntity<Void> deletarUsuario(@PathVariable Long id){
-		service.deletarUsuario(id);
-		return ResponseEntity.noContent().build();
-	}
-	
 	@Operation(summary = "Atualizar usuario", method = "PUT")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description="Usuario atualizado"),
@@ -83,14 +68,15 @@ public class UsuarioController {
 		return ResponseEntity.ok(saida);
 	}
 	
-	@Operation(summary = "Listar usuarios", method = "GET")
+	@Operation(summary = "Deletar usuario", method = "DELETE")
 	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description="Usuarios listados"),
-			@ApiResponse(responseCode = "500", description="Erro ao listar usuarios")
+			@ApiResponse(responseCode = "204", description="Usuario deletado"),
+			@ApiResponse(responseCode = "500", description="Erro ao deletar usuario")
 	})
-	@GetMapping
-	public List<SaidaDTO> listarTodos(){
-		return service.listarUsuarios();
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deletarUsuario(@PathVariable Long id){
+		service.deletarUsuario(id);
+		return ResponseEntity.noContent().build();
 	}
 	
 	@Operation(summary = "Teste de login", method = "POST")
@@ -98,8 +84,21 @@ public class UsuarioController {
 			@ApiResponse(responseCode = "200", description="Teste de login efetuado com sucesso"),
 			@ApiResponse(responseCode = "500", description="Erro ao fazer teste de login")
 	})
+
 	@PostMapping("/login")
-	public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginDTO login){
-		return ResponseEntity.ok(service.login(login));
+	public ResponseEntity<SaidaDTO> login(@Valid @RequestBody LoginDTO login ){
+		SaidaDTO saida = service.login(login);
+		
+		return ResponseEntity.ok(saida);
+	}
+	
+	@Operation(summary = "Listar usuarios", method = "GET")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description="Usuarios listados"),
+			@ApiResponse(responseCode = "500", description="Erro ao listar usuarios")
+	})
+	@GetMapping
+	public List<SaidaDTO> listarUsuarios(){
+		return service.listarTodos();
 	}
 }
