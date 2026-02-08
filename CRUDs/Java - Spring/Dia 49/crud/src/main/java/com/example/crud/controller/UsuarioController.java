@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.crud.assembler.Assembler;
 import com.example.crud.business.UsuarioService;
 import com.example.crud.dto.AtualizacaoDTO;
 import com.example.crud.dto.EntradaDTO;
@@ -28,26 +29,27 @@ import lombok.RequiredArgsConstructor;
 public class UsuarioController {
 	
 	private final UsuarioService service;
+	private final Assembler assembler;
 	
 	@PostMapping
 	public ResponseEntity<SaidaDTO> adicionarUsuario(@Valid @RequestBody EntradaDTO entrada){
 		SaidaDTO saida = service.adicionarUsuario(entrada);
 		
-		return ResponseEntity.status(HttpStatus.CREATED).body(saida);
+		return ResponseEntity.status(HttpStatus.CREATED).body(assembler.addHateoas(saida));
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<SaidaDTO> buscarUsuario(@PathVariable Long id){
 		SaidaDTO saida = service.buscarUsuario(id);
 		
-		return ResponseEntity.ok(saida);
+		return ResponseEntity.ok(assembler.addHateoas(saida));
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<SaidaDTO> atualizarUsuario(@PathVariable Long id, @RequestBody AtualizacaoDTO atl){
 		SaidaDTO saida = service.atualizarUsuario(id, atl);
 		
-		return ResponseEntity.ok(saida);
+		return ResponseEntity.ok(assembler.addHateoas(saida));
 	}
 	
 	@DeleteMapping("/{id}")
