@@ -19,6 +19,6 @@ public class PrivateService {
 		String token = authHeader.substring(7);
 		String nome = jwt.extrairUsuario(token);
 		
-		return "Ola, "+ nome;
+		return "Ola, "+nome;
 	}
 }
