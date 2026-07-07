@@ -1,5 +1,6 @@
 package com.example.crud.infrastructure.entity;
 
+import com.example.crud.ifrastructure.entity.Carro;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,5 +30,8 @@ public class Usuario {
     @Column(name = "senha", nullable = false)
     private String senha;
 
-
+    @OneToMany(mappedBy = "usuario",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true)
+    private List<Carro> carros = new ArrayList<>();
 }

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.Instant;
 
 @RestControllerAdvice
-public class RestExceptionHandler {
+public class RestControllerHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDTO> exception(Exception e){
